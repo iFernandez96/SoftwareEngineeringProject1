@@ -1,141 +1,37 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite'
 
-const db = SQLite.openDatabase('mydatabase.db');
 
-export interface User {
-  id?: number;
-  username: string;
-  name: string;
-  email: string;
-  password: string;
+const db = await SQLite.openDatabaseAsync('databaseName');
+
+// `execAsync()` is useful for bulk queries when you want to execute altogether.
+// Note that `execAsync()` does not escape parameters and may lead to SQL injection.
+await db.execAsync(`
+PRAGMA journal_mode = WAL;
+CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
+INSERT INTO test (value, intValue) VALUES ('test1', 123);
+INSERT INTO test (value, intValue) VALUES ('test2', 456);
+INSERT INTO test (value, intValue) VALUES ('test3', 789);
+`);
+
+// `runAsync()` is useful when you want to execute some write operations.
+const result = await db.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'aaa', 100);
+console.log(result.lastInsertRowId, result.changes);
+await db.runAsync('UPDATE test SET intValue = ? WHERE value = ?', 999, 'aaa'); // Binding unnamed parameters from variadic arguments
+await db.runAsync('UPDATE test SET intValue = ? WHERE value = ?', [999, 'aaa']); // Binding unnamed parameters from array
+await db.runAsync('DELETE FROM test WHERE value = $value', { $value: 'aaa' }); // Binding named parameters from object
+
+// `getFirstAsync()` is useful when you want to get a single row from the database.
+const firstRow = await db.getFirstAsync('SELECT * FROM test');
+console.log(firstRow.id, firstRow.value, firstRow.intValue);
+
+// `getAllAsync()` is useful when you want to get all results as an array of objects.
+const allRows = await db.getAllAsync('SELECT * FROM test');
+for (const row of allRows) {
+  console.log(row.id, row.value, row.intValue);
 }
 
-export interface FavoritePokemon {
-  id?: number;
-  user_id: number;
-  pokemon_name: string;
+// `getEachAsync()` is useful when you want to iterate SQLite query cursor.
+for await (const row of db.getEachAsync('SELECT * FROM test')) {
+  console.log(row.id, row.value, row.intValue);
 }
-
-export const createTables = (): void => {
-  db.transaction(tx => {
-    tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-      );`,
-      [],
-      () => console.log('Users table created successfully'),
-      (_, error) => {
-        console.error('Error creating users table:', error);
-        return false;
-      }
-    );
-
-    tx.executeSql(
-      `CREATE TABLE IF NOT EXISTS favorites (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        pokemon_name TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-      );`,
-      [],
-      () => console.log('Favorites table created successfully'),
-      (_, error) => {
-        console.error('Error creating favorites table:', error);
-        return false;
-      }
-    );
-  });
-};
-
-export const insertUser = (user: User, callback: (success: boolean) => void): void => {
-  db.transaction(tx => {
-    tx.executeSql(
-      `INSERT INTO users (username, name, email, password) VALUES (?, ?, ?, ?);`,
-      [user.username, user.name, user.email, user.password],
-      (_, result) => {
-        console.log('User inserted:', result);
-        callback(true);
-      },
-      (_, error) => {
-        console.error('Error inserting user:', error);
-        callback(false);
-        return false;
-      }
-    );
-  });
-};
-
-export const fetchUsers = (callback: (users: User[]) => void): void => {
-  db.transaction(tx => {
-    tx.executeSql(
-      `SELECT * FROM users;`,
-      [],
-      (_, { rows }) => {
-        callback(rows._array);
-      },
-      (_, error) => {
-        console.error('Error fetching users:', error);
-        return false;
-      }
-    );
-  });
-};
-
-export const insertFavoritePokemon = (user_id: number, pokemon_name: string, callback: (success: boolean) => void): void => {
-  db.transaction(tx => {
-    tx.executeSql(
-      `INSERT INTO favorites (user_id, pokemon_name) VALUES (?, ?);`,
-      [user_id, pokemon_name],
-      (_, result) => {
-        console.log('Favorite Pokémon added:', result);
-        callback(true);
-      },
-      (_, error) => {
-        console.error('Error inserting favorite Pokémon:', error);
-        callback(false);
-        return false;
-      }
-    );
-  });
-};
-
-export const fetchFavoritePokemon = (user_id: number, callback: (favorites: FavoritePokemon[]) => void): void => {
-  db.transaction(tx => {
-    tx.executeSql(
-      `SELECT * FROM favorites WHERE user_id = ?;`,
-      [user_id],
-      (_, { rows }) => {
-        callback(rows._array);
-      },
-      (_, error) => {
-        console.error('Error fetching favorite Pokémon:', error);
-        return false;
-      }
-    );
-  });
-};
-
-export const deleteFavoritePokemon = (id: number, callback: (success: boolean) => void): void => {
-  db.transaction(tx => {
-    tx.executeSql(
-      `DELETE FROM favorites WHERE id = ?;`,
-      [id],
-      (_, result) => {
-        console.log('Favorite Pokémon deleted:', result);
-        callback(true);
-      },
-      (_, error) => {
-        console.error('Error deleting favorite Pokémon:', error);
-        callback(false);
-        return false;
-      }
-    );
-  });
-};
-
-export default db;
 
