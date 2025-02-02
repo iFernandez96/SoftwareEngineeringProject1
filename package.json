@@ -44,7 +44,7 @@
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "expo-sqlite": "~15.1.0"
+    "expo-sqlite": "~15.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
