@@ -10,7 +10,7 @@ dist/
 web-build/
 expo-env.d.ts
 
-Exponent-2.32.17.apk
+#Exponent-2.32.17.apk
 
 # Native
 *.orig.*
