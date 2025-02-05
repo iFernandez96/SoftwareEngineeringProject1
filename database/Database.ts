@@ -1,30 +1,33 @@
-import * as SQLite from "expo-sqlite";
-import bcrypt from "bcryptjs";
+// database.ts
+import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
+import bcrypt from 'react-native-bcrypt';
 
-const db = SQLite.openDatabase("pokedex.db");
+type QueryType = 'select' | 'run';
 
-// Execute SQL and return a promise
-export const executeSql = (
+// Pass an object with the name key:
+const dbPromise: Promise<SQLiteDatabase> = openDatabaseAsync('pokedex.db');
+
+async function getDatabase(): Promise<SQLiteDatabase> {
+  return await dbPromise;
+}
+
+export const executeSql = async (
   query: string,
   params: any[] = [],
-): Promise<SQLite.SQLResultSet> => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        query,
-        params,
-        (_, result) => resolve(result),
-        (_, error) => {
-          reject(error);
-          return false;
-        },
-      );
-    });
-  });
+  type: QueryType = 'run'
+): Promise<any> => {
+  const db = await getDatabase();
+
+  if (type === 'select') {
+    return await db.getAllAsync(query, params);
+  } else {
+    return await db.runAsync(query, ...params);
+  }
 };
 
 export const initializeDatabase = async () => {
-  await executeSql(`PRAGMA journal_mode = WAL;`);
+  await executeSql(`PRAGMA journal_mode = WAL;`, [], 'run');
+
   await executeSql(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY NOT NULL,
@@ -32,12 +35,14 @@ export const initializeDatabase = async () => {
       password TEXT
     );
   `);
+
   await executeSql(`
     CREATE TABLE IF NOT EXISTS pokemon (
       id INTEGER PRIMARY KEY NOT NULL,
       name TEXT NOT NULL
     );
   `);
+
   await executeSql(`
     CREATE TABLE IF NOT EXISTS user_likes (
       id INTEGER PRIMARY KEY NOT NULL,
@@ -47,6 +52,7 @@ export const initializeDatabase = async () => {
       FOREIGN KEY(pokemon_id) REFERENCES pokemon(id)
     );
   `);
+
   await executeSql(`
     CREATE TABLE IF NOT EXISTS user_top6 (
       id INTEGER PRIMARY KEY NOT NULL,
@@ -59,38 +65,46 @@ export const initializeDatabase = async () => {
   `);
 };
 
-export const registerUser = async (
+export async function registerUser(
   username: string,
-  password: string,
-): Promise<number> => {
+  password: string
+): Promise<number> {
   const salt = bcrypt.genSaltSync(10);
   const hashedPassword = bcrypt.hashSync(password, salt);
+
   const result = await executeSql(
     `INSERT INTO users (username, password) VALUES (?, ?);`,
     [username, hashedPassword],
+    'run'
   );
+
   return result.insertId;
-};
+}
 
 export const loginUser = async (
   username: string,
   password: string,
 ): Promise<boolean> => {
-  const result = await executeSql(`SELECT * FROM users WHERE username = ?;`, [
-    username,
-  ]);
-  if (result.rows.length > 0) {
-    const user = result.rows.item(0);
+  const rows = await executeSql(
+    `SELECT * FROM users WHERE username = ?;`,
+    [username],
+    'select'
+  );
+
+  if (rows && rows.length > 0) {
+    const user = rows[0];
     return bcrypt.compareSync(password, user.password);
   }
   return false;
 };
 
 export const addPokemon = async (name: string): Promise<number> => {
-  const result = await executeSql(`INSERT INTO pokemon (name) VALUES (?);`, [
-    name,
-  ]);
-  return result.insertId;
+  const result = await executeSql(
+    `INSERT INTO pokemon (name) VALUES (?);`,
+    [name],
+    'run'
+  );
+  return result.lastInsertRowId;
 };
 
 export const addFavouritePokemon = async (
@@ -100,8 +114,9 @@ export const addFavouritePokemon = async (
   const result = await executeSql(
     `INSERT INTO user_likes (user_id, pokemon_id) VALUES (?, ?);`,
     [userId, pokemonId],
+    'run'
   );
-  return result.insertId;
+  return result.lastInsertRowId;
 };
 
 export const updateUserTop6 = async (
@@ -112,6 +127,7 @@ export const updateUserTop6 = async (
   const result = await executeSql(
     `INSERT INTO user_top6 (user_id, pokemon_id, ranking) VALUES (?, ?, ?);`,
     [userId, pokemonId, ranking],
+    'run'
   );
-  return result.insertId;
+  return result.lastInsertRowId;
 };
