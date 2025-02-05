@@ -1,37 +1,117 @@
-import * as SQLite from 'expo-sqlite'
+import * as SQLite from "expo-sqlite";
+import bcrypt from "bcryptjs";
 
+const db = SQLite.openDatabase("pokedex.db");
 
-const db = await SQLite.openDatabaseAsync('databaseName');
+// Execute SQL and return a promise
+export const executeSql = (
+  query: string,
+  params: any[] = [],
+): Promise<SQLite.SQLResultSet> => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        query,
+        params,
+        (_, result) => resolve(result),
+        (_, error) => {
+          reject(error);
+          return false;
+        },
+      );
+    });
+  });
+};
 
-// `execAsync()` is useful for bulk queries when you want to execute altogether.
-// Note that `execAsync()` does not escape parameters and may lead to SQL injection.
-await db.execAsync(`
-PRAGMA journal_mode = WAL;
-CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
-INSERT INTO test (value, intValue) VALUES ('test1', 123);
-INSERT INTO test (value, intValue) VALUES ('test2', 456);
-INSERT INTO test (value, intValue) VALUES ('test3', 789);
-`);
+export const initializeDatabase = async () => {
+  await executeSql(`PRAGMA journal_mode = WAL;`);
+  await executeSql(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY NOT NULL,
+      username TEXT UNIQUE,
+      password TEXT
+    );
+  `);
+  await executeSql(`
+    CREATE TABLE IF NOT EXISTS pokemon (
+      id INTEGER PRIMARY KEY NOT NULL,
+      name TEXT NOT NULL
+    );
+  `);
+  await executeSql(`
+    CREATE TABLE IF NOT EXISTS user_likes (
+      id INTEGER PRIMARY KEY NOT NULL,
+      user_id INTEGER,
+      pokemon_id INTEGER,
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      FOREIGN KEY(pokemon_id) REFERENCES pokemon(id)
+    );
+  `);
+  await executeSql(`
+    CREATE TABLE IF NOT EXISTS user_top6 (
+      id INTEGER PRIMARY KEY NOT NULL,
+      user_id INTEGER,
+      pokemon_id INTEGER,
+      ranking INTEGER,
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      FOREIGN KEY(pokemon_id) REFERENCES pokemon(id)
+    );
+  `);
+};
 
-// `runAsync()` is useful when you want to execute some write operations.
-const result = await db.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'aaa', 100);
-console.log(result.lastInsertRowId, result.changes);
-await db.runAsync('UPDATE test SET intValue = ? WHERE value = ?', 999, 'aaa'); // Binding unnamed parameters from variadic arguments
-await db.runAsync('UPDATE test SET intValue = ? WHERE value = ?', [999, 'aaa']); // Binding unnamed parameters from array
-await db.runAsync('DELETE FROM test WHERE value = $value', { $value: 'aaa' }); // Binding named parameters from object
+export const registerUser = async (
+  username: string,
+  password: string,
+): Promise<number> => {
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  const result = await executeSql(
+    `INSERT INTO users (username, password) VALUES (?, ?);`,
+    [username, hashedPassword],
+  );
+  return result.insertId;
+};
 
-// `getFirstAsync()` is useful when you want to get a single row from the database.
-const firstRow = await db.getFirstAsync('SELECT * FROM test');
-console.log(firstRow.id, firstRow.value, firstRow.intValue);
+export const loginUser = async (
+  username: string,
+  password: string,
+): Promise<boolean> => {
+  const result = await executeSql(`SELECT * FROM users WHERE username = ?;`, [
+    username,
+  ]);
+  if (result.rows.length > 0) {
+    const user = result.rows.item(0);
+    return bcrypt.compareSync(password, user.password);
+  }
+  return false;
+};
 
-// `getAllAsync()` is useful when you want to get all results as an array of objects.
-const allRows = await db.getAllAsync('SELECT * FROM test');
-for (const row of allRows) {
-  console.log(row.id, row.value, row.intValue);
-}
+export const addPokemon = async (name: string): Promise<number> => {
+  const result = await executeSql(`INSERT INTO pokemon (name) VALUES (?);`, [
+    name,
+  ]);
+  return result.insertId;
+};
 
-// `getEachAsync()` is useful when you want to iterate SQLite query cursor.
-for await (const row of db.getEachAsync('SELECT * FROM test')) {
-  console.log(row.id, row.value, row.intValue);
-}
+export const addFavouritePokemon = async (
+  userId: number,
+  pokemonId: number,
+): Promise<number> => {
+  const result = await executeSql(
+    `INSERT INTO user_likes (user_id, pokemon_id) VALUES (?, ?);`,
+    [userId, pokemonId],
+  );
+  return result.insertId;
+};
 
+export const updateUserTop6 = async (
+  userId: number,
+  pokemonId: number,
+  ranking: number,
+): Promise<number> => {
+  const result = await executeSql(
+    `INSERT INTO user_top6 (user_id, pokemon_id, ranking) VALUES (?, ?, ?);`,
+    [userId, pokemonId, ranking],
+  );
+  return result.insertId;
+};

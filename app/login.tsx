@@ -9,18 +9,37 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Link } from "expo-router";
+import { loginUser } from "@/database/Database";
 
-export default function LoginScreen() {
+export function Index() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Hello world!</Text>
+      <Link href="/" style={styles.button}>
+        Go Home
+      </Link>
+    </View>
+  );
+}
+
+export function login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please fill in both fields.");
       return;
     }
-    Alert.alert("Login Successful", `Welcome, ${email}!`);
+    const valid = await loginUser(email, password);
+    if (valid) {
+      Alert.alert("Login Successful!");
+      router.push("/");
+    } else {
+      Alert.alert("Login failed...", "Invalid username or password");
+    }
   };
 
   return (

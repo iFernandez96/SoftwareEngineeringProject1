@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { registerUser } from "@/database/Database";
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleSignUp = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in both fields.");
-      return;
+  const handleRegister = async () => {
+    try {
+      await registerUser(email, password);
+      Alert.alert("Registration Successful!!");
+      router.push("/login");
+    } catch (error) {
+      Alert.alert("Registration Failed... Please retry");
     }
-    Alert.alert("Account Created", `Welcome, ${email}!`);
-    router.push("/login"); // navigate back to the login page
   };
 
   return (
@@ -36,7 +38,7 @@ export default function SignUpScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign Up" onPress={handleSignUp} color="#4caf50" />
+      <Button title="Sign Up" onPress={handleRegister} color="#4caf50" />
     </View>
   );
 }
