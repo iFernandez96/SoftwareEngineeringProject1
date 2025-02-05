@@ -1,11 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter(); 
+  const router = useRouter();
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -36,13 +44,14 @@ export default function LoginScreen() {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} color="#4caf50" />
-
       <View style={styles.createAccountContainer}>
         <Text style={styles.createAccountText}>
           If you don't already have an account,{" "}
         </Text>
         <TouchableOpacity onPress={() => router.push("/signup")}>
-          <Text style={styles.createAccountLink}>click here to create one.</Text>
+          <Text style={styles.createAccountLink}>
+            click here to create one.
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
