@@ -15,30 +15,35 @@ import { loginUser } from "@/database/Database";
 export function Index() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hello world!</Text>
-      <Link href="/" style={styles.button}>
+      <Text style={styles.title}>Hello world!</Text>
+      <Link href="/" style={styles.link}>
         Go Home
       </Link>
     </View>
   );
 }
 
-export default function login() {
-  const [email, setEmail] = useState("");
+export default function LoginScreen() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!username || !password) {
       Alert.alert("Error", "Please fill in both fields.");
       return;
     }
-    const valid = await loginUser(email, password);
-    if (valid) {
-      Alert.alert("Login Successful!");
-      router.push("/");
-    } else {
-      Alert.alert("Login failed...", "Invalid username or password");
+
+    try {
+      const { success, user } = await loginUser(username, password);
+      if (success && user) {
+        Alert.alert(`Welcome ${user.name}!`, "Redirecting to home page...");
+        router.push("/"); // navigate to home
+      } else {
+        Alert.alert("Login failed...", "Invalid username or password");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
 
@@ -47,11 +52,10 @@ export default function login() {
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your email"
+        placeholder="Enter your username"
         placeholderTextColor="#aaa"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput
@@ -110,6 +114,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   createAccountLink: {
+    color: "#4caf50",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  link: {
     color: "#4caf50",
     fontWeight: "bold",
     fontSize: 14,
