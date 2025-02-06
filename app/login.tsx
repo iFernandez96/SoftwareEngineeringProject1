@@ -1,18 +1,45 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { useRouter } from "expo-router";
+import { Link } from "expo-router";
+import { loginUser } from "@/database/Database";
 
-export default function LoginScreen() {
+export function Index() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Hello world!</Text>
+      <Link href="/" style={styles.button}>
+        Go Home
+      </Link>
+    </View>
+  );
+}
+
+export default function login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter(); 
+  const router = useRouter();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please fill in both fields.");
       return;
     }
-    Alert.alert("Login Successful", `Welcome, ${email}!`);
+    const valid = await loginUser(email, password);
+    if (valid) {
+      Alert.alert("Login Successful!");
+      router.push("/");
+    } else {
+      Alert.alert("Login failed...", "Invalid username or password");
+    }
   };
 
   return (
@@ -36,13 +63,14 @@ export default function LoginScreen() {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} color="#4caf50" />
-
       <View style={styles.createAccountContainer}>
         <Text style={styles.createAccountText}>
           If you don't already have an account,{" "}
         </Text>
         <TouchableOpacity onPress={() => router.push("/signup")}>
-          <Text style={styles.createAccountLink}>click here to create one.</Text>
+          <Text style={styles.createAccountLink}>
+            click here to create one.
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

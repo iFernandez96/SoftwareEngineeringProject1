@@ -5,9 +5,12 @@ node_modules/
 
 # Expo
 .expo/
+.expo
 dist/
 web-build/
 expo-env.d.ts
+
+#Exponent-2.32.17.apk
 
 # Native
 *.orig.*

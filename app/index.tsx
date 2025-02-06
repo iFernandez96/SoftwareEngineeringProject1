@@ -2,12 +2,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "./screens/HomeScreen";
 import SearchScreen from "./screens/SearchScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import { Ionicons } from "@expo/vector-icons";  //imports the home, search, and profile icons for bottom navigator
-
+import { Ionicons } from "@expo/vector-icons"; //imports the home, search, and profile icons for bottom navigator
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigator(){
+export default function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({  //to customize the tab
