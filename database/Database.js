@@ -17,7 +17,7 @@ export const createTable = () => {
   });
 };
 
-export const insertUser (name, age, callback) => {
+export const insertUser = (name, age, callback) => {
   db.transaction(tx => {
     tx.executeSql(
       `INSERT INTO users (name, age) VALUES (?, ?);`,
