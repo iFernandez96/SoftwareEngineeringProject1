@@ -19,12 +19,12 @@ export default function TabNavigator() {
           if(route.name === "Home") iconName = "home";
           else if (route.name === "Search") iconName = "search";
           else if (route.name === "Profile") iconName = "person";
-          return <Ionicons name={iconName} size={size} color={color} style={{ marginBottom: -20 }} />;
+          return <Ionicons name={iconName} size={size} color={color} style={{ marginBottom: -10 }} />;
         },
         tabBarActiveTintColor: "white",
         tabBarInactiveTintColor: "gray",
         tabBarStyle: { backgroundColor: "#1e1e1e", paddingBottom: 1},
-        tabBarIconStyle: {marginBottom: 12},
+        tabBarIconStyle: {marginBottom: 5},
         headerShown: false,
       })}
     > 
