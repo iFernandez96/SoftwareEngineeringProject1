@@ -9,6 +9,7 @@ export default function RootLayout() {
     <Tabs>
       <Tabs.Screen name="index" options={{ title: "Home" }} />
       <Tabs.Screen name="pokemon" options={{ title: "Pokemon Search" }} />
+      <Tabs.Screen name="pokedex" options={{ title: "Pokedex" }} />
       <Tabs.Screen name="login" options={{ title: "Login" }} />
       <Tabs.Screen name="signup" options={{ title: "Sign Up" }} />
     </Tabs>

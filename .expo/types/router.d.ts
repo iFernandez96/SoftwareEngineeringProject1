@@ -6,55 +6,9 @@ export * from 'expo-router';
 declare module 'expo-router' {
   export namespace ExpoRouter {
     export interface __routes<T extends string | object = string> {
-      hrefInputParams: 
-        | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams }
-        | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }
-        | { pathname: `/`; params?: Router.UnknownInputParams }
-        | { pathname: `/_sitemap`; params?: Router.UnknownInputParams }
-        | { pathname: `/screens/HomeScreen`; params?: Router.UnknownInputParams }
-        | { pathname: `/screens/ProfileScreen`; params?: Router.UnknownInputParams }
-        | { pathname: `/screens/SearchScreen`; params?: Router.UnknownInputParams }
-        | { pathname: `/login`; params?: Router.UnknownInputParams }
-        | { pathname: `/pokemon`; params?: Router.UnknownInputParams }
-        | { pathname: `/signup`; params?: Router.UnknownInputParams }
-        | { pathname: `/api/pokeApi`; params?: Router.UnknownInputParams };
-
-      hrefOutputParams: 
-        | { pathname: Router.RelativePathString, params?: Router.UnknownOutputParams }
-        | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams }
-        | { pathname: `/`; params?: Router.UnknownOutputParams }
-        | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams }
-        | { pathname: `/screens/HomeScreen`; params?: Router.UnknownOutputParams }
-        | { pathname: `/screens/ProfileScreen`; params?: Router.UnknownOutputParams }
-        | { pathname: `/screens/SearchScreen`; params?: Router.UnknownOutputParams }
-        | { pathname: `/login`; params?: Router.UnknownOutputParams }
-        | { pathname: `/pokemon`; params?: Router.UnknownOutputParams }
-        | { pathname: `/signup`; params?: Router.UnknownOutputParams }
-        | { pathname: `/api/pokeApi`; params?: Router.UnknownOutputParams };
-
-      href: 
-        | Router.RelativePathString 
-        | Router.ExternalPathString 
-        | `/${`?${string}` | `#${string}` | ''}`
-        | `/_sitemap${`?${string}` | `#${string}` | ''}`
-        | `/screens/HomeScreen${`?${string}` | `#${string}` | ''}`
-        | `/screens/ProfileScreen${`?${string}` | `#${string}` | ''}`
-        | `/screens/SearchScreen${`?${string}` | `#${string}` | ''}`
-        | `/login${`?${string}` | `#${string}` | ''}`
-        | `/pokemon${`?${string}` | `#${string}` | ''}`
-        | `/signup${`?${string}` | `#${string}` | ''}`
-        | `/api/pokeApi${`?${string}` | `#${string}` | ''}`
-        | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams }
-        | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }
-        | { pathname: `/`; params?: Router.UnknownInputParams }
-        | { pathname: `/_sitemap`; params?: Router.UnknownInputParams }
-        | { pathname: `/screens/HomeScreen`; params?: Router.UnknownInputParams }
-        | { pathname: `/screens/ProfileScreen`; params?: Router.UnknownInputParams }
-        | { pathname: `/screens/SearchScreen`; params?: Router.UnknownInputParams }
-        | { pathname: `/login`; params?: Router.UnknownInputParams }
-        | { pathname: `/pokemon`; params?: Router.UnknownInputParams }
-        | { pathname: `/signup`; params?: Router.UnknownInputParams }
-        | { pathname: `/api/pokeApi`; params?: Router.UnknownInputParams };
+      hrefInputParams: { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/login`; params?: Router.UnknownInputParams; } | { pathname: `/pokemon`; params?: Router.UnknownInputParams; } | { pathname: `/signup`; params?: Router.UnknownInputParams; } | { pathname: `/pokedex`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/api/pokeApi`; params?: Router.UnknownInputParams; } | { pathname: `/screens/HomeScreen`; params?: Router.UnknownInputParams; } | { pathname: `/screens/ProfileScreen`; params?: Router.UnknownInputParams; } | { pathname: `/screens/SearchScreen`; params?: Router.UnknownInputParams; };
+      hrefOutputParams: { pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/`; params?: Router.UnknownOutputParams; } | { pathname: `/login`; params?: Router.UnknownOutputParams; } | { pathname: `/pokemon`; params?: Router.UnknownOutputParams; } | { pathname: `/signup`; params?: Router.UnknownOutputParams; } | { pathname: `/pokedex`; params?: Router.UnknownOutputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; } | { pathname: `/api/pokeApi`; params?: Router.UnknownOutputParams; } | { pathname: `/screens/HomeScreen`; params?: Router.UnknownOutputParams; } | { pathname: `/screens/ProfileScreen`; params?: Router.UnknownOutputParams; } | { pathname: `/screens/SearchScreen`; params?: Router.UnknownOutputParams; };
+      href: Router.RelativePathString | Router.ExternalPathString | `/${`?${string}` | `#${string}` | ''}` | `/login${`?${string}` | `#${string}` | ''}` | `/pokemon${`?${string}` | `#${string}` | ''}` | `/signup${`?${string}` | `#${string}` | ''}` | `/pokedex${`?${string}` | `#${string}` | ''}` | `/_sitemap${`?${string}` | `#${string}` | ''}` | `/api/pokeApi${`?${string}` | `#${string}` | ''}` | `/screens/HomeScreen${`?${string}` | `#${string}` | ''}` | `/screens/ProfileScreen${`?${string}` | `#${string}` | ''}` | `/screens/SearchScreen${`?${string}` | `#${string}` | ''}` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/login`; params?: Router.UnknownInputParams; } | { pathname: `/pokemon`; params?: Router.UnknownInputParams; } | { pathname: `/signup`; params?: Router.UnknownInputParams; } | { pathname: `/pokedex`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/api/pokeApi`; params?: Router.UnknownInputParams; } | { pathname: `/screens/HomeScreen`; params?: Router.UnknownInputParams; } | { pathname: `/screens/ProfileScreen`; params?: Router.UnknownInputParams; } | { pathname: `/screens/SearchScreen`; params?: Router.UnknownInputParams; };
     }
   }
 }
