@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#25292e", 
         padding: 10,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        paddingTop: 50
     },
     row: {
         flexDirection: "row",
