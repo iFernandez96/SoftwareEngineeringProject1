@@ -4,17 +4,28 @@ import { useRouter } from "expo-router";
 import { registerUser } from "@/database/Database";
 
 export default function SignUpScreen() {
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleRegister = async () => {
+    if (!name || !age || !username || !password) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
     try {
-      await registerUser(email, password);
-      Alert.alert("Registration Successful!!");
-      router.push("/login");
+      const userId = await registerUser(name, parseInt(age), username, password);
+      if (userId) {
+        Alert.alert("Registration Successful!", "You can now log in.");
+        router.push("/login");
+      } else {
+        Alert.alert("Registration Failed...", "Username might already exist.");
+      }
     } catch (error) {
-      Alert.alert("Registration Failed... Please retry");
+      Alert.alert("Registration Failed , Please retry.");
     }
   };
 
@@ -23,11 +34,25 @@ export default function SignUpScreen() {
       <Text style={styles.title}>Create an Account</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your email"
+        placeholder="Enter your name"
         placeholderTextColor="#aaa"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your age"
+        placeholderTextColor="#aaa"
+        value={age}
+        onChangeText={setAge}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your username"
+        placeholderTextColor="#aaa"
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput

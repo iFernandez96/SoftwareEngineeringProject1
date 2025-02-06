@@ -26,15 +26,22 @@ export const executeSql = async (
 };
 
 export const initializeDatabase = async () => {
+  console.log("Initializing database...");
   await executeSql(`PRAGMA journal_mode = WAL;`, [], 'run');
 
   await executeSql(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY NOT NULL,
-      username TEXT UNIQUE,
-      password TEXT
+      name TEXT NOT NULL,
+      age INTEGER NOT NULL,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL
     );
+     console.log("Users table created successfully.");
+     } catch (error) {
+     console.error("Error creating users table:", error);
   `);
+
 
   await executeSql(`
     CREATE TABLE IF NOT EXISTS pokemon (
@@ -66,6 +73,8 @@ export const initializeDatabase = async () => {
 };
 
 export async function registerUser(
+  name: string,
+  age: number,
   username: string,
   password: string
 ): Promise<number> {
@@ -73,8 +82,8 @@ export async function registerUser(
   const hashedPassword = bcrypt.hashSync(password, salt);
 
   const result = await executeSql(
-    `INSERT INTO users (username, password) VALUES (?, ?);`,
-    [username, hashedPassword],
+    `INSERT INTO users (name, age, username, password) VALUES (?, ?, ?, ?);`,
+    [name, age, username, hashedPassword],
     'run'
   );
 
@@ -83,19 +92,45 @@ export async function registerUser(
 
 export const loginUser = async (
   username: string,
-  password: string,
-): Promise<boolean> => {
+  password: string
+): Promise<{ success: boolean; user?: { id: number; name: string; age: number; username: string } }> => {
   const rows = await executeSql(
-    `SELECT * FROM users WHERE username = ?;`,
+    `SELECT id, name, age, username, password FROM users WHERE username = ?;`,
     [username],
     'select'
   );
 
   if (rows && rows.length > 0) {
     const user = rows[0];
-    return bcrypt.compareSync(password, user.password);
+
+    if (bcrypt.compareSync(password, user.password)) {
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          age: user.age,
+          username: user.username
+        }
+      };
+    }
   }
-  return false;
+  return { success: false };
+};
+
+export const getUserProfile = async (
+  username: string
+): Promise<{ name: string; age: number; username: string } | null> => {
+  const rows = await executeSql(
+    `SELECT name, age, username FROM users WHERE username = ?;`,
+    [username],
+    'select'
+  );
+
+  if (rows && rows.length > 0) {
+    return rows[0];
+  }
+  return null;
 };
 
 export const addPokemon = async (name: string): Promise<number> => {
