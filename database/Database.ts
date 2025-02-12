@@ -1,10 +1,8 @@
-// database.ts
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import bcrypt from 'react-native-bcrypt';
 
 type QueryType = 'select' | 'run';
 
-// Pass an object with the name key:
 const dbPromise: Promise<SQLiteDatabase> = openDatabaseAsync('pokedex.db');
 
 async function getDatabase(): Promise<SQLiteDatabase> {
@@ -29,6 +27,8 @@ export const initializeDatabase = async () => {
   console.log("Initializing database...");
   await executeSql(`PRAGMA journal_mode = WAL;`, [], 'run');
 
+  //await executeSql(`DROP TABLE IF EXISTS users;`); //TEST PURPOSES ONLY
+
   await executeSql(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY NOT NULL,
@@ -37,11 +37,7 @@ export const initializeDatabase = async () => {
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL
     );
-     console.log("Users table created successfully.");
-     } catch (error) {
-     console.error("Error creating users table:", error);
   `);
-
 
   await executeSql(`
     CREATE TABLE IF NOT EXISTS pokemon (
@@ -77,17 +73,29 @@ export async function registerUser(
   age: number,
   username: string,
   password: string
-): Promise<number> {
+): Promise<number | null> {
   const salt = bcrypt.genSaltSync(10);
   const hashedPassword = bcrypt.hashSync(password, salt);
 
-  const result = await executeSql(
-    `INSERT INTO users (name, age, username, password) VALUES (?, ?, ?, ?);`,
-    [name, age, username, hashedPassword],
-    'run'
-  );
+  try {
+    const result = await executeSql(
+      `INSERT INTO users (name, age, username, password) VALUES (?, ?, ?, ?);`,
+      [name, age, username, hashedPassword],
+      "run"
+    );
 
-  return result.insertId;
+    console.log("User successfully inserted:", result);
+    
+    if (result && "lastInsertRowId" in result && result.lastInsertRowId) {
+      return result.lastInsertRowId; 
+    } else {
+      console.error("Error: lastInsertRowId is undefined");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error in registerUser:", error);
+    return null;
+  }
 }
 
 export const loginUser = async (
@@ -144,7 +152,7 @@ export const addPokemon = async (name: string): Promise<number> => {
 
 export const addFavouritePokemon = async (
   userId: number,
-  pokemonId: number,
+  pokemonId: number
 ): Promise<number> => {
   const result = await executeSql(
     `INSERT INTO user_likes (user_id, pokemon_id) VALUES (?, ?);`,
@@ -157,7 +165,7 @@ export const addFavouritePokemon = async (
 export const updateUserTop6 = async (
   userId: number,
   pokemonId: number,
-  ranking: number,
+  ranking: number
 ): Promise<number> => {
   const result = await executeSql(
     `INSERT INTO user_top6 (user_id, pokemon_id, ranking) VALUES (?, ?, ?);`,
