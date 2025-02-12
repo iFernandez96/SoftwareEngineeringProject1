@@ -1,38 +1,55 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "./screens/HomeScreen";
-import SearchScreen from "./screens/SearchScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import { Ionicons } from "@expo/vector-icons"; //imports the home, search, and profile icons for bottom navigator
-import PokemonSearch from "./pokemon";
+import { Ionicons } from "@expo/vector-icons";
 import Pokedex from "./pokedex";
-import login from "./login";
+import PokemonSearch from "./pokemon";
+import LoginScreen from "./login";
 import SignUpScreen from "./signup";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const user = await AsyncStorage.getItem("user");
+      setIsAuthenticated(!!user);
+    };
+    checkAuth();
+  }, []);
+
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({  //to customize the tab
+      screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if(route.name === "Home") iconName = "home";
+          let iconName: keyof typeof Ionicons.glyphMap = "home"; 
+          if (route.name === "Home") iconName = "home";
           else if (route.name === "Search") iconName = "search";
           else if (route.name === "Profile") iconName = "person";
-          return <Ionicons name={iconName} size={size} color={color} style={{ marginBottom: -10 }} />;
+          return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: "white",
         tabBarInactiveTintColor: "gray",
-        tabBarStyle: { backgroundColor: "#1e1e1e", paddingBottom: 1},
-        tabBarIconStyle: {marginBottom: 5},
+        tabBarStyle: { backgroundColor: "#1e1e1e" },
         headerShown: false,
       })}
-    > 
-      <Tab.Screen name="Home" component={Pokedex} />   
-      <Tab.Screen name="Search" component={PokemonSearch} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Login" component={login} />
-      <Tab.Screen name="Signup" component={SignUpScreen} />
-    </Tab.Navigator>  //routes to different screens when clicked
+    >
+      {isAuthenticated ? (
+        <>
+          <Tab.Screen name="Home" component={Pokedex} />
+          <Tab.Screen name="Search" component={PokemonSearch} />
+          <Tab.Screen name="Profile" component={ProfileScreen} />
+        </>
+      ) : (
+        <>
+          <Tab.Screen name="Login" component={LoginScreen} />
+          <Tab.Screen name="Signup" component={SignUpScreen} />
+        </>
+      )}
+    </Tab.Navigator>
   );
 }
+
