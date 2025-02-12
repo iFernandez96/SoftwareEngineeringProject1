@@ -98,8 +98,6 @@ export async function registerUser(
   }
 }
 
-
-
 export const loginUser = async (
   username: string,
   password: string
@@ -126,4 +124,53 @@ export const loginUser = async (
     }
   }
   return { success: false };
+};
+
+export const getUserProfile = async (
+  username: string
+): Promise<{ name: string; age: number; username: string } | null> => {
+  const rows = await executeSql(
+    `SELECT name, age, username FROM users WHERE username = ?;`,
+    [username],
+    'select'
+  );
+
+  if (rows && rows.length > 0) {
+    return rows[0];
+  }
+  return null;
+};
+
+export const addPokemon = async (name: string): Promise<number> => {
+  const result = await executeSql(
+    `INSERT INTO pokemon (name) VALUES (?);`,
+    [name],
+    'run'
+  );
+  return result.lastInsertRowId;
+};
+
+export const addFavouritePokemon = async (
+  userId: number,
+  pokemonId: number
+): Promise<number> => {
+  const result = await executeSql(
+    `INSERT INTO user_likes (user_id, pokemon_id) VALUES (?, ?);`,
+    [userId, pokemonId],
+    'run'
+  );
+  return result.lastInsertRowId;
+};
+
+export const updateUserTop6 = async (
+  userId: number,
+  pokemonId: number,
+  ranking: number
+): Promise<number> => {
+  const result = await executeSql(
+    `INSERT INTO user_top6 (user_id, pokemon_id, ranking) VALUES (?, ?, ?);`,
+    [userId, pokemonId, ranking],
+    'run'
+  );
+  return result.lastInsertRowId;
 };
