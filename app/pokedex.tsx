@@ -3,7 +3,11 @@ import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from "react
 import { getPokemon } from "./api/pokeApi";
 import { Pokemon } from "pokenode-ts";
 import { Dimensions } from "react-native";
+<<<<<<< HEAD
 import { addPokemon, executeSql } from "@/database/Database";
+=======
+import Song from "./song";
+>>>>>>> main
 
 const screenWidth = Dimensions.get("window").width;
 const baseColumns = 2;
@@ -67,7 +71,13 @@ export default function Pokedex() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Pokédex</Text>
+            <Song />
+            <Text style={styles.title}>P
+                <Image
+                    source={require("@/assets/images/pokeball.png")}
+                    style={styles.pokeball}
+                />
+                kédex</Text>
             {selectedPokemon ? (
                 <View style={styles.detailsContainer}>
                     <Text style={styles.name}>{selectedPokemon.name.toUpperCase()}</Text>
@@ -114,6 +124,9 @@ export default function Pokedex() {
                 />
             )}
         </View>
+
+        
+        
     );
 }
 
@@ -168,7 +181,7 @@ const styles = StyleSheet.create({
         borderRadius: 10, 
         alignItems: "center", 
         position: "absolute", 
-        top: "10%"
+        top: "23%",
     },
     info: { 
         color: "#fff", 
@@ -193,5 +206,10 @@ const styles = StyleSheet.create({
         color: "#ff4444", 
         fontSize: 16, 
         marginTop: 10 
+    },
+    pokeball: {     
+        resizeMode:"contain",
+        width: 18,
+        height: 18,
     }
 });

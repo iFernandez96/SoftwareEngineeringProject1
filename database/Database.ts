@@ -28,7 +28,7 @@ export const initializeDatabase = async () => {
   console.log("Initializing database...");
   await executeSql(`PRAGMA journal_mode = WAL;`, [], 'run');
 
-  //await executeSql(`DROP TABLE IF EXISTS users;`); //TEST PURPOSES ONLY
+  // await executeSql(`DROP TABLE IF EXISTS users;`); //TEST PURPOSES ONLY
 
   await executeSql(`
     CREATE TABLE IF NOT EXISTS users (
