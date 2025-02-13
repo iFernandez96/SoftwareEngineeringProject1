@@ -1,6 +1,7 @@
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import bcrypt from 'react-native-bcrypt';
 
+
 type QueryType = 'select' | 'run';
 
 const dbPromise: Promise<SQLiteDatabase> = openDatabaseAsync('pokedex.db');
