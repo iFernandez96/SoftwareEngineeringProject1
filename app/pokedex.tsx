@@ -3,11 +3,15 @@ import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from "react
 import { getPokemon } from "./api/pokeApi";
 import { Pokemon } from "pokenode-ts";
 import { Dimensions } from "react-native";
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 import { addPokemon, executeSql } from "@/database/Database";
 =======
 import Song from "./song";
 >>>>>>> main
+=======
+import { addFavouritePokemon, addPokemon, executeSql } from "@/database/Database";
+>>>>>>> Stashed changes
 
 const screenWidth = Dimensions.get("window").width;
 const baseColumns = 2;
@@ -59,7 +63,7 @@ export default function Pokedex() {
         }
 
         try {
-            await addPokemon(pokemon.name);
+            await addFavouritePokemon(pokemon.name);
             await fetchSavedPokemon();
             alert(pokemon.name + " saved");
         } catch (error) {
