@@ -4,11 +4,15 @@ import { getPokemon } from "./api/pokeApi";
 import { Pokemon } from "pokenode-ts";
 import { Dimensions } from "react-native";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 import { addPokemon, executeSql } from "@/database/Database";
 =======
 import Song from "./song";
 >>>>>>> main
+=======
+import { addFavouritePokemon, addPokemon, executeSql } from "@/database/Database";
+>>>>>>> Stashed changes
 =======
 import { addFavouritePokemon, addPokemon, executeSql } from "@/database/Database";
 >>>>>>> Stashed changes
