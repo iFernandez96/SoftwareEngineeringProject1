@@ -1,8 +1,13 @@
 import { Stack } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { initializeDatabase, executeSql } from "@/database/Database";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RootLayout() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+
   useEffect(() => {
     const setupDatabase = async () => {
       console.log("Initializing database...");
@@ -11,15 +16,15 @@ export default function RootLayout() {
         await initializeDatabase();
         console.log("Database initialized successfully.");
 
-        const tables = await executeSql(
-          `SELECT name FROM sqlite_master WHERE type='table';`,
-          [],
-          "select"
-        );
-        console.log("Existing tables:", tables);
-
-        const userSchema = await executeSql(`PRAGMA table_info(users);`, [], "select");
-        console.log("Users table schema:", userSchema);
+        // check if user is already logged in
+        const user = await AsyncStorage.getItem("user");
+        if (user) {
+          setIsAuthenticated(true);
+          router.replace("/"); // go to home if authenticated
+        } else {
+          setIsAuthenticated(false);
+          router.replace("/login"); // go to login if not authenticated
+        }
       } catch (error) {
         console.error("Error verifying database:", error);
       }
@@ -28,7 +33,5 @@ export default function RootLayout() {
     setupDatabase();
   }, []);
 
-  return (
-    <Stack screenOptions={{ headerShown: false }} />
-  );
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

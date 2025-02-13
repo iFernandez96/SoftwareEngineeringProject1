@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { registerUser } from "@/database/Database";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignUpScreen() {
   const [name, setName] = useState("");
@@ -19,13 +20,15 @@ export default function SignUpScreen() {
     try {
       const userId = await registerUser(name, parseInt(age), username, password);
       if (userId) {
-        Alert.alert("Registration Successful!", "You can now log in.");
-        router.push("/login");
+        const newUser = { id: userId, name, age, username };
+        await AsyncStorage.setItem("user", JSON.stringify(newUser));
+        Alert.alert("Registration Successful!", "Logging you in...");
+        router.replace("/"); // go to home
       } else {
-        Alert.alert("Registration Failed...", "Username might already exist.");
+        Alert.alert("Registration Failed", "Username might already exist.");
       }
     } catch (error) {
-      Alert.alert("Registration Failed , Please retry.");
+      Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
 
@@ -64,6 +67,13 @@ export default function SignUpScreen() {
         secureTextEntry
       />
       <Button title="Sign Up" onPress={handleRegister} color="#4caf50" />
+
+      <View style={styles.loginContainer}>
+        <Text style={styles.loginText}>Already have an account? </Text>
+        <TouchableOpacity onPress={() => router.push("/login")}>
+          <Text style={styles.loginLink}>Click here to login</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -91,5 +101,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: "#fff",
     backgroundColor: "#333",
+  },
+  loginContainer: {
+    marginTop: 16,
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  loginText: {
+    color: "#aaa",
+    fontSize: 14,
+  },
+  loginLink: {
+    color: "#4caf50",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });

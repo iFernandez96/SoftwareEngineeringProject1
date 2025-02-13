@@ -11,6 +11,8 @@ import {
 import { useRouter } from "expo-router";
 import { Link } from "expo-router";
 import { loginUser } from "@/database/Database";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export function Index() {
   return (
@@ -33,14 +35,15 @@ export default function LoginScreen() {
       Alert.alert("Error", "Please fill in both fields.");
       return;
     }
-
+  
     try {
       const { success, user } = await loginUser(username, password);
       if (success && user) {
+        await AsyncStorage.setItem("user", JSON.stringify(user)); // store user data
         Alert.alert(`Welcome ${user.name}!`, "Redirecting to home page...");
-        router.push("/"); // navigate to home
+        router.replace("/"); // go to home
       } else {
-        Alert.alert("Login failed...", "Invalid username or password");
+        Alert.alert("Login failed", "Invalid username or password");
       }
     } catch (error) {
       Alert.alert("Error", "Something went wrong. Please try again.");
