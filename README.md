@@ -1,50 +1,42 @@
-# Welcome to your Expo app 👋
+# Check the Dex
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Welcome to Check the Dex, a React Native Expo application.
 
-## Get started
+Authors: Abel Delgadom Eric Rios, Jaden Bartram, Israel Fernandez
 
-1. Install dependencies
+## Introduction
+
+Check the Dex is a React Native Expo app that allows users to search for pokemon they like and add them to an account that they make when they register.  
+
+## Getting Started
+
+To set up and run the application locally, follow these steps:
+
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/iFernandez96/SoftwareEngineeringProject1.git
+   cd SoftwareEngineeringProject1
+   ```
+
+2. **Install Dependencies**
+
+   Ensure you have [Node.js](https://nodejs.org/) installed. Then, run:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Start the Application**
+
+   Launch the app using Expo:
 
    ```bash
-    npx expo start
+   npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Using the App
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Currently only mobile works because expolite database doesn't support the web app version. To run the app, either scan the QR code on your mobile phone or open up [Expo Orbit](https://docs.expo.dev/build/orbit/) which uses an android emulator. If you need an android emulator, you can download one through android studio. 
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+In order to use the app, you must first create an account, then you are able to use the app. Have fun!
