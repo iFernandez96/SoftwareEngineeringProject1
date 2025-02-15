@@ -18,9 +18,9 @@ export default function ProfileScreen() {
   }, []);
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem("user"); // Clear user session
-    setUser(null); // Reset user state
-    router.replace("/login"); // Redirect to login
+    await AsyncStorage.removeItem("user"); // clear user session
+    setUser(null); // reset user state
+    router.replace("/login"); 
   };
 
   return (
