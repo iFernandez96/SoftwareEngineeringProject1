@@ -70,7 +70,6 @@ export default function Pokedex() {
 
     return (
         <View style={styles.container}>
-            <Song />
             <Text style={styles.title}>P
                 <Image
                     source={require("@/assets/images/pokeball.png")}

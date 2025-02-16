@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
 
 export default function Song() {
@@ -9,7 +9,7 @@ export default function Song() {
   useEffect(() => {
     const loadSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
-        require("@/assets/sounds/PokemonThemeSong.mp3"), //or try 'PokemonSongV2.mp3'
+        require("@/assets/sounds/PokemonSongV2.mp3"), //or try 'PokemonSongV2.mp3' 'PokemonThemeSong.mp3'
         { isLooping: true }
       );
       setSound(sound);
@@ -36,11 +36,15 @@ export default function Song() {
   };
 
   return (
-    <TouchableOpacity
-    onPress={toggleSound} 
-    style={[styles.button, { backgroundColor: isMuted ? "rgba(206, 74, 46, 0.5)" : "rgba(255, 255, 255, 0.5)" }]} //used rgba to slightly change the opacity
-    >
-      <Text style={styles.buttonText}>{isMuted ? "🔇" : "🔊"}</Text>
+    <TouchableOpacity onPress={toggleSound} style={styles.button}>
+      <Image
+        source={
+          isMuted
+            ? require("@/assets/images/pokeballclosed.png") // Closed Pokeball image
+            : require("@/assets/images/pokeballempty.png") // Open Pokeball image
+        }
+        style={styles.pokeball}
+      />
     </TouchableOpacity>
   );
 }
@@ -50,12 +54,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 50,
     right: 20,
-    backgroundColor: ("#ce4a2e"),
-    padding: 10,
     borderRadius: 5,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
+  pokeball: {
+    width: 50,  
+    height: 50,
   },
 });
