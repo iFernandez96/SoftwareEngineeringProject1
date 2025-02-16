@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, Image, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, Image, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { getPokemon } from "./api/pokeApi";
 import { Pokemon } from "pokenode-ts";
+import { executeSql, addFavouritePokemon } from "@/database/Database";
 
 export default function PokemonSearch() {
     const [pokemonName, setPokemonName] = useState("");
