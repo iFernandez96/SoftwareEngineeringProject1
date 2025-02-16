@@ -3,6 +3,9 @@ import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from "react
 import { getPokemon } from "./api/pokeApi";
 import { Pokemon } from "pokenode-ts";
 import { Dimensions } from "react-native";
+import Song from "./song";
+import { addFavouritePokemon, addPokemon, executeSql } from "@/database/Database";
+
 
 const screenWidth = Dimensions.get("window").width;
 const baseColumns = 2;
@@ -13,6 +16,7 @@ const itemSize = screenWidth / numColumns - 20;
 export default function Pokedex() {
     const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
     const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
+    const [savedPokemon, setSavedPokemon] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         const fetchPokemonList = async () => {
@@ -27,11 +31,51 @@ export default function Pokedex() {
         };
         fetchPokemonList();
     }, []);
+    
+
+    const fetchSavedPokemon = async () => {
+        try {
+            const pokemonData: {name: string}[] = await executeSql(
+                "SELECT name FROM pokemon;",
+                [],
+                "select"
+            );
+            const savedNames = new Set(pokemonData.map(p => p.name));
+            setSavedPokemon(savedNames);
+        } catch (error) {
+            console.error("Error fetching saved Pokemon", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchSavedPokemon();
+    }, []);
+
+    const savePokemon = async (pokemon: Pokemon) => {
+        if (!pokemon) {
+            alert("No Pokemon selected!");
+            return;
+        }
+
+        try {
+            await addPokemon(pokemon.name);
+            await fetchSavedPokemon();
+            alert(pokemon.name + " saved");
+        } catch (error) {
+            console.error("Error saving Pokemon", error);
+            alert("Error saving Pokemon");
+        }
+    } 
 
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Pokédex</Text>
+            <Text style={styles.title}>P
+                <Image
+                    source={require("@/assets/images/pokeball.png")}
+                    style={styles.pokeball}
+                />
+                kédex</Text>
             {selectedPokemon ? (
                 <View style={styles.detailsContainer}>
                     <Text style={styles.name}>{selectedPokemon.name.toUpperCase()}</Text>
@@ -48,6 +92,11 @@ export default function Pokedex() {
                     {selectedPokemon.stats.map(stat => (
                         <Text key={stat.stat.name} style={styles.info}>{stat.stat.name.toUpperCase()}: {stat.base_stat}</Text>
                     ))}
+
+                    <TouchableOpacity onPress={() => savePokemon(selectedPokemon)}>
+                        <Text style={styles.saveButton}>Save Pokemon</Text>
+                    </TouchableOpacity>
+
                     <TouchableOpacity onPress={() => setSelectedPokemon(null)}>
                         <Text style={styles.backButton}>Back</Text>
                     </TouchableOpacity>
@@ -65,12 +114,17 @@ export default function Pokedex() {
                             ) : (
                                 <Text style={styles.errorText}>No Image Available</Text>
                             )}
-                            <Text style={styles.name}>{item.name.toUpperCase()}</Text>
+                            <Text style={styles.name}>
+                                {item.name.toUpperCase()} {savedPokemon.has(item.name) ? "✅" : ""}
+                            </Text>
                         </TouchableOpacity>
                     )}
                 />
             )}
         </View>
+
+        
+        
     );
 }
 
@@ -125,12 +179,21 @@ const styles = StyleSheet.create({
         borderRadius: 10, 
         alignItems: "center", 
         position: "absolute", 
-        top: "10%"
+        top: "23%",
     },
     info: { 
         color: "#fff", 
         fontSize: 16, 
         marginVertical: 2 
+    },
+    saveButton: { 
+        backgroundColor: "#4CAF50", 
+        padding: 10, 
+        borderRadius: 8, 
+        color: "#fff", 
+        fontSize: 18, 
+        textAlign: "center", 
+        marginVertical: 5 
     },
     backButton: { 
         color: "#ff4444", 
@@ -141,5 +204,10 @@ const styles = StyleSheet.create({
         color: "#ff4444", 
         fontSize: 16, 
         marginTop: 10 
+    },
+    pokeball: {     
+        resizeMode:"contain",
+        width: 18,
+        height: 18,
     }
 });

@@ -1,6 +1,7 @@
 import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import bcrypt from 'react-native-bcrypt';
 
+
 type QueryType = 'select' | 'run';
 
 const dbPromise: Promise<SQLiteDatabase> = openDatabaseAsync('pokedex.db');
@@ -27,7 +28,7 @@ export const initializeDatabase = async () => {
   console.log("Initializing database...");
   await executeSql(`PRAGMA journal_mode = WAL;`, [], 'run');
 
-  //await executeSql(`DROP TABLE IF EXISTS users;`); //TEST PURPOSES ONLY
+  // await executeSql(`DROP TABLE IF EXISTS users;`); //TEST PURPOSES ONLY
 
   await executeSql(`
     CREATE TABLE IF NOT EXISTS users (
