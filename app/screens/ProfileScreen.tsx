@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import Song from "../song";
+
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -24,7 +26,9 @@ export default function ProfileScreen() {
   };
 
   return (
+
     <View style={styles.container}>
+      <Song />
       <Text style={styles.title}>Your Profile</Text>
 
       {user ? (
