@@ -8,7 +8,7 @@ import Song from "../song";
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string; age: number; username: string } | null>(null);
+  const [user, setUser] = useState<{ id: Number, name: string; age: number; username: string } | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
@@ -43,14 +43,6 @@ export default function ProfileScreen() {
           transparent={true}
           visible={modalVisible}
           onRequestClose={async () => {
-            const user = { id: 0, name: "", username: "" };
-            await AsyncStorage.getItem("user");
-            if (!user) {
-              return;
-            }
-            updateAge(user.id, Number(age));
-            updateName(user.id, name);
-            updateUserName(user.id, username);
             setModalVisible(!modalVisible);
           }}>
           <View style={styles.centeredView}>
@@ -84,24 +76,31 @@ export default function ProfileScreen() {
                 onChangeText={setName}
                 autoCapitalize="none"
               />
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Update</Text>
-              </Pressable>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={async () => {
+                if (!user) return;
+                // Update the user profile with the new values
+                await updateAge(user.id, Number(age));
+                await updateName(user.id, name);
+                await updateUserName(user.id, username);
+                // Optionally update the local state if needed
+                setUser({ ...user, age: Number(age), name, username });
+                setModalVisible(false);
+              }}>
+              <Text style={styles.textStyle}>Confirm</Text>
+            </Pressable>
             </View>
           </View>
         </Modal>
         <Pressable
           style={[styles.button, styles.buttonOpen]}
           onPress={() => setModalVisible(true)}>
-          <Text style={styles.textStyle}>Show Modal</Text>
+          <Text style={styles.textStyle}>Update User Information</Text>
         </Pressable>
       </SafeAreaView>
     </SafeAreaProvider>
-
       <Text style={styles.title}>Your Profile</Text>
-
       {user ? (
         <View style={styles.infoContainer}>
           <Text style={styles.infoText}><Text style={styles.label}>Name:</Text> {user.name}</Text>

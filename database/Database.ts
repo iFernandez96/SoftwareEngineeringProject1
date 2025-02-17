@@ -142,7 +142,7 @@ export const getUserProfile = async (
   return null;
 };
 
-export const updateName = async (userId: number, newName: string): Promise<boolean> => {
+export const updateName = async (userId: Number, newName: string): Promise<boolean> => {
   try {
     await executeSql(
       `UPDATE users SET name = ? WHERE id = ?;`,
@@ -156,7 +156,7 @@ export const updateName = async (userId: number, newName: string): Promise<boole
   }
 };
 
-export const updateAge = async (userId: number, age: number): Promise<boolean> => {
+export const updateAge = async (userId: Number, age: number): Promise<boolean> => {
   try {
     await executeSql(
       `UPDATE users SET age = ? WHERE id = ?;`,
@@ -170,10 +170,10 @@ export const updateAge = async (userId: number, age: number): Promise<boolean> =
   }
 };
 
-export const updateUserName = async (userId: number, newUserName: string): Promise<boolean> => {
+export const updateUserName = async (userId: Number, newUserName: string): Promise<boolean> => {
   try {
     await executeSql(
-      `UPDATE users SET user = ? WHERE id = ?;`,
+      `UPDATE users SET username = ? WHERE id = ?;`,
       [newUserName, userId],
       'run'
     );
