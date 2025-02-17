@@ -52,10 +52,10 @@ export default function ProfileScreen() {
               <Text style={styles.modalText}>Name:</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your username"
+                placeholder="Enter your name"
                 placeholderTextColor="#aaa"
-                value={username}
-                onChangeText={setUsername}
+                value={name}
+                onChangeText={setName}
                 autoCapitalize="none"
               />
               <Text style={styles.modalText}>Age:</Text>
@@ -70,10 +70,10 @@ export default function ProfileScreen() {
               <Text style={styles.modalText}>Username:</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your Name"
+                placeholder="Enter your UserName"
                 placeholderTextColor="#aaa"
-                value={name}
-                onChangeText={setName}
+                value={username}
+                onChangeText={setUsername}
                 autoCapitalize="none"
               />
             <Pressable
@@ -194,4 +194,3 @@ const styles = StyleSheet.create({
     color: "#4caf50",
   },
 });
-
