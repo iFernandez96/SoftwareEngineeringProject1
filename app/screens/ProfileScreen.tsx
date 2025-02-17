@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, Button, StyleSheet, Alert, Modal, Pressable } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import { getUserName } from '@/database/Database'
 import { useRouter } from "expo-router";
 import Song from "../song";
 
-
 export default function ProfileScreen() {
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; age: number; username: string } | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,6 +31,36 @@ export default function ProfileScreen() {
 
     <View style={styles.container}>
       <Song />
+
+      <SafeAreaProvider>
+      <SafeAreaView style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Hello World!</Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+        <Pressable
+          style={[styles.button, styles.buttonOpen]}
+          onPress={() => setModalVisible(true)}>
+          <Text style={styles.textStyle}>Show Modal</Text>
+        </Pressable>
+      </SafeAreaView>
+    </SafeAreaProvider>
+
       <Text style={styles.title}>Your Profile</Text>
 
       {user ? (
