@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, Alert, Modal, Pressable } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-import { getUserName } from '@/database/Database'
+import { updateUserName, updateAge, updateName } from '@/database/Database'
 import { useRouter } from "expo-router";
 import Song from "../song";
 
@@ -10,6 +10,9 @@ export default function ProfileScreen() {
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; age: number; username: string } | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [username, setUsername] = useState("");
+  const [age, setAge] = useState("");
+  const [name, setName] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -20,6 +23,7 @@ export default function ProfileScreen() {
     };
     fetchUserData();
   }, []);
+
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user"); // clear user session
@@ -38,17 +42,52 @@ export default function ProfileScreen() {
           animationType="slide"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
+          onRequestClose={async () => {
+            const user = { id: 0, name: "", username: "" };
+            await AsyncStorage.getItem("user");
+            if (!user) {
+              return;
+            }
+            updateAge(user.id, Number(age));
+            updateName(user.id, name);
+            updateUserName(user.id, username);
             setModalVisible(!modalVisible);
           }}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
+              <Text style={styles.modalText}>Update Profile</Text>
+              
+              <Text style={styles.modalText}>Name:</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your username"
+                placeholderTextColor="#aaa"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+              />
+              <Text style={styles.modalText}>Age:</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                placeholder="Enter your Age"
+                placeholderTextColor="#aaa"
+                value={age}
+                onChangeText={setAge}
+               />
+              <Text style={styles.modalText}>Username:</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your Name"
+                placeholderTextColor="#aaa"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="none"
+              />
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Hide Modal</Text>
+                <Text style={styles.textStyle}>Update</Text>
               </Pressable>
             </View>
           </View>
@@ -79,6 +118,13 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    width: "100%",
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  }, 
   centeredView: {
     flex: 1,
     justifyContent: 'center',
