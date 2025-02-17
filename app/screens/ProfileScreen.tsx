@@ -1,50 +1,48 @@
-import React, {useState} from 'react';
-import { View, Text, Button, StyleSheet, Pressable, Modal, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import { getUserName } from '@/database/Database'
 import { useRouter } from "expo-router";
+import Song from "../song";
+
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [user, setUser] = useState<{ name: string; age: number; username: string } | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const storedUser = await AsyncStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+    fetchUserData();
+  }, []);
+
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user"); // clear user session
-    router.replace("/login"); // go to login
+    setUser(null); // reset user state
+    router.replace("/login"); 
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaProvider>
-      <SafeAreaView style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-        <Pressable
-          style={[styles.button, styles.buttonOpen]}
-          onPress={() => setModalVisible(true)}>
-          <Text style={styles.textStyle}>Show Modal</Text>
-        </Pressable>
-      </SafeAreaView>
-    </SafeAreaProvider>
 
-      <Text style={styles.text}>Your Profile</Text>
+    <View style={styles.container}>
+      <Song />
+      <Text style={styles.title}>Your Profile</Text>
+
+      {user ? (
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoText}><Text style={styles.label}>Name:</Text> {user.name}</Text>
+          <Text style={styles.infoText}><Text style={styles.label}>Age:</Text> {user.age}</Text>
+          <Text style={styles.infoText}><Text style={styles.label}>Username:</Text> {user.username}</Text>
+        </View>
+      ) : (
+        <Text style={styles.infoText}>Loading user data...</Text>
+      )}
+
       <Button title="Sign Out" onPress={handleLogout} color="#ff4444" />
     </View>
   );
@@ -98,10 +96,27 @@ const styles = StyleSheet.create({
     backgroundColor: "#25292e",
     paddingTop: 75,
   },
-  text: {
+  title: {
     color: "#fff",
     fontSize: 28,
     fontWeight: "bold",
-    textAlign: "center",
+    marginBottom: 20,
+  },
+  infoContainer: {
+    backgroundColor: "#333",
+    padding: 16,
+    borderRadius: 10,
+    width: "80%",
+    marginBottom: 20,
+  },
+  infoText: {
+    color: "#fff",
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  label: {
+    fontWeight: "bold",
+    color: "#4caf50",
   },
 });
+
