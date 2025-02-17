@@ -142,6 +142,48 @@ export const getUserProfile = async (
   return null;
 };
 
+export const updateName = async (userId: Number, newName: string): Promise<boolean> => {
+  try {
+    await executeSql(
+      `UPDATE users SET name = ? WHERE id = ?;`,
+      [newName, userId],
+      'run'
+    );
+    return true;
+  } catch (error) {
+    console.error("Error updating name:", error);
+    return false;
+  }
+};
+
+export const updateAge = async (userId: Number, age: number): Promise<boolean> => {
+  try {
+    await executeSql(
+      `UPDATE users SET age = ? WHERE id = ?;`,
+      [age, userId],
+      'run'
+    );
+    return true;
+  } catch (error) {
+    console.error("Error updating age:", error);
+    return false;
+  }
+};
+
+export const updateUserName = async (userId: Number, newUserName: string): Promise<boolean> => {
+  try {
+    await executeSql(
+      `UPDATE users SET username = ? WHERE id = ?;`,
+      [newUserName, userId],
+      'run'
+    );
+    return true;
+  } catch (error) {
+    console.error("Error updating username:", error);
+    return false;
+  }
+};
+
 export const addPokemon = async (name: string): Promise<number> => {
   const result = await executeSql(
     `INSERT INTO pokemon (name) VALUES (?);`,
